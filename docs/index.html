@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API Spring AI — Semantic Search (OpenAI v1)</title>
+  <meta name="description" content="A small Spring Boot demo that shows how to use Spring AI with OpenAI to:">
+  <!-- Theme: Forest (dark forest greens with soft lime accents). Each repository uses a different Pages theme. -->
+  <style>
+    :root { --bg: #1d2a20; --panel: #243528; --fg: #e8efe0; --muted: #a9bba0; --accent: #a7d37b;
+  --border: #3b5440; --code: #172219; --font: system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --head: #d8ecc3; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; background: var(--bg); color: var(--fg); font: 16px/1.6 var(--font);
+      padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); }
+    main { max-width: 880px; margin: 0 auto; padding: 40px 0 64px; }
+    .hero { background: var(--panel); border: 2px solid var(--border); border-radius: 18px; padding: 28px; margin-bottom: 28px; }
+    h1 { font-size: 2.1rem; margin: 0 0 8px; color: var(--head); line-height: 1.2; }
+    h2 { font-size: 1.35rem; margin: 40px 0 12px; color: var(--head); border-bottom: 2px solid var(--border); padding-bottom: 6px; }
+    h3 { font-size: 1.1rem; margin: 26px 0 8px; color: var(--accent); }
+    p, li { color: var(--fg); }
+    a { color: var(--accent); font-weight: 600; }
+    .panel { background: var(--panel); border: 2px solid var(--border); border-radius: 14px; padding: 22px 26px; }
+    .wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .95rem; background: var(--panel); }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--head); }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9rem; }
+    code { background: var(--code); padding: 1px 6px; border-radius: 5px; }
+    pre { background: var(--code); padding: 14px; border: 1px solid var(--border); border-radius: 10px; overflow-x: auto; max-width: 100%; }
+    pre code { background: none; padding: 0; }
+    img { max-width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--border); }
+    .cta { display:inline-block; margin: 14px 10px 0 0; padding: 8px 16px; border: 2px solid var(--accent); border-radius: 10px; text-decoration: none; color: var(--accent); }
+    footer { margin-top: 48px; color: var(--muted); font-size: .85rem; border-top: 2px solid var(--border); padding-top: 14px; }
+  </style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <h1>API Spring AI — Semantic Search (OpenAI v1)</h1>
+    <p>A small Spring Boot demo that shows how to use Spring AI with OpenAI to:</p>
+    <a class="cta" href="https://github.com/josesaid/api-spring-ai-semantic-search-openai-v1">View source on GitHub</a>
+    <a class="cta" href="https://josesaid.github.io/">Portfolio index</a>
+  </section>
+  <article class="panel">
+<p>A small Spring Boot demo that shows how to use <a href="https://spring.io/projects/spring-ai">Spring AI</a> with OpenAI to:</p>
+<ul>
+<li>Generate <strong>text embeddings</strong> from strings.</li>
+<li>Compute <strong>cosine similarity</strong> between embeddings to compare how semantically close two pieces of text are (semantic search).</li>
+<li>Expose a simple <strong>chat REST endpoint</strong> backed by an OpenAI chat model.</li>
+</ul>
+<p>It is part of a training series on Java + Spring AI (<code>03 - Semantic Search</code>).</p>
+<h2>What this project demonstrates</h2>
+<h3>1. Embeddings &amp; cosine similarity (<code>SemanticSearchRunner</code>)</h3>
+<p><a href="https://github.com/josesaid/api-spring-ai-semantic-search-openai-v1/blob/main/src/main/java/com/mx/development/jose/said/runner/SemanticSearchRunner.java"><code>SemanticSearchRunner</code></a> is a <code>CommandLineRunner</code> bean that runs automatically on application startup. It uses Spring AI's <code>EmbeddingModel</code> to turn text into vectors and then measures similarity between them with a hand-written cosine similarity function.</p>
+<p>The active example (<code>embedding4</code>) runs a tiny semantic search:</p>
+<ol>
+<li>Takes a query string (e.g. <code>"Pinsa"</code>, a misspelling of "Pizza").</li>
+<li>Embeds a list of candidate documents (<code>Vehículo</code>, <code>Coche</code>, <code>Carro</code>, <code>Bicicleta</code>, <code>Avión</code>, <code>Pizza</code>).</li>
+<li>Embeds the query and compares it against every document using cosine similarity.</li>
+<li>Prints the documents ranked by similarity score, highest first.</li>
+</ol>
+<p>This shows the core idea behind semantic search: instead of exact keyword matching, texts are compared by the <em>meaning</em> captured in their embedding vectors, so even a misspelled or related query can surface the right result.</p>
+<p>The class also keeps several other example runners (currently disabled via commented-out <code>@Bean</code>) that were used to explore the same concept step by step:</p>
+<ul>
+<li><code>embedding</code>: generates a single embedding and prints its dimension and first values.</li>
+<li><code>embeddingCompare</code>: compares a few handpicked sentence pairs (e.g. technical vs. unrelated topics).</li>
+<li><code>embedding2</code> / <code>embedding3</code>: build a full similarity matrix across a list of words/phrases.</li>
+</ul>
+<p>You can enable any of these by uncommenting the corresponding <code>@Bean</code> annotation.</p>
+<h3>2. Chat endpoint (<code>ChatController</code> / <code>ChatService</code>)</h3>
+<p>A minimal REST API wraps Spring AI's <code>ChatClient</code> to send a free-form question to the OpenAI chat model and return its answer:</p>
+<ul>
+<li><strong>Endpoint:</strong> <code>GET /api/v1/chat-service/chat?question=&lt;your question&gt;</code></li>
+<li><strong>Controller:</strong> <a href="https://github.com/josesaid/api-spring-ai-semantic-search-openai-v1/blob/main/src/main/java/com/mx/development/jose/said/controller/ChatController.java"><code>ChatController</code></a></li>
+<li><strong>Service:</strong> <a href="https://github.com/josesaid/api-spring-ai-semantic-search-openai-v1/blob/main/src/main/java/com/mx/development/jose/said/service/ChatServiceImpl.java"><code>ChatServiceImpl</code></a> builds a <code>ChatClient</code> from the auto-configured <code>ChatClient.Builder</code> and forwards the question to it.</li>
+</ul>
+<h2>Tech stack</h2>
+<ul>
+<li><strong>Java 24</strong></li>
+<li><strong>Spring Boot 4.1.0</strong></li>
+<li><strong>Spring AI 2.0.0</strong> (<code>spring-ai-starter-model-openai</code>)</li>
+<li><strong>Maven</strong> (with the Maven Wrapper, <code>mvnw</code>)</li>
+<li>OpenAI as the model provider (chat + embeddings)</li>
+</ul>
+<h2>Project structure</h2>
+<pre><code>src/main/java/.../com/mx/development/jose/said/
+├── ApiSpringAiDemoV1Application.java   # Spring Boot entry point
+├── controller/
+│   └── ChatController.java             # REST endpoint for chat
+├── dto/
+│   └── Resultado.java                  # (text, score) pair used in similarity results
+├── runner/
+│   └── SemanticSearchRunner.java       # Embedding &amp; cosine similarity examples
+└── service/
+    ├── ChatService.java                # Chat service contract
+    └── ChatServiceImpl.java            # Chat service implementation using ChatClient
+
+src/main/resources/
+├── application.yml                     # Base config (port, active profile, logging)
+└── application-openai.yml              # OpenAI API key configuration (profile: openai)
+</code></pre>
+<h2>Configuration</h2>
+<p>The application runs with the <code>openai</code> Spring profile active by default (see <code>application.yml</code>). The OpenAI API key is read from an environment variable:</p>
+<pre><code class="language-yaml"># application-openai.yml
+spring:
+  ai:
+    openai:
+      api-key: ${API_KEY}
+</code></pre>
+<p>You need a valid OpenAI API key — see https://platform.openai.com/api-keys.</p>
+<p>The server runs on port <strong>8088</strong> by default (<code>server.port</code> in <code>application.yml</code>).</p>
+<h2>Running the project</h2>
+<ol>
+<li>Export your OpenAI API key:</li>
+</ol>
+<p><code>bash
+   export API_KEY=sk-...</code></p>
+<ol>
+<li>Run the application with the Maven Wrapper:</li>
+</ol>
+<p><code>bash
+   ./mvnw spring-boot:run</code></p>
+<p>On startup, <code>SemanticSearchRunner</code> will print the embedding/similarity results to the console.</p>
+<ol>
+<li>Call the chat endpoint:</li>
+</ol>
+<p><code>bash
+   curl "http://localhost:8088/api/v1/chat-service/chat?question=What%20is%20Spring%20AI%3F"</code></p>
+<h2>Notes</h2>
+<ul>
+<li>Logging for <code>org.springframework.ai</code> and <code>org.springframework.web.client</code> is set to <code>DEBUG</code> in <code>application.yml</code>, which is useful for inspecting the requests/responses exchanged with OpenAI while experimenting.</li>
+<li>Several runner methods in <code>SemanticSearchRunner</code> are intentionally commented out (<code>//@Bean</code>); they are alternative examples kept for learning purposes and can be toggled on individually.</li>
+</ul>
+  </article>
+  <footer>Source and documentation: <a href="https://github.com/josesaid/api-spring-ai-semantic-search-openai-v1">github.com/josesaid/api-spring-ai-semantic-search-openai-v1</a> · <a href="https://josesaid.github.io/">josesaid.github.io</a></footer>
+</main>
+</body>
+</html>
