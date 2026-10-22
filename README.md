@@ -1,5 +1,7 @@
 # API Spring AI — Semantic Search (OpenAI v1)
 
+![Java: 24](https://img.shields.io/badge/Java-24-ED8B00?logo=openjdk&logoColor=white) ![Spring_Boot: 4.1.0](https://img.shields.io/badge/Spring_Boot-4.1.0-6DB33F?logo=springboot&logoColor=white) ![Spring_AI: 2.0.0](https://img.shields.io/badge/Spring_AI-2.0.0-6DB33F) ![Model: OpenAI](https://img.shields.io/badge/Model-OpenAI-412991?logo=openai&logoColor=white)
+
 **Project page:** https://josesaid.github.io/api-spring-ai-semantic-search-openai-v1/
 
 A small Spring Boot demo that shows how to use [Spring AI](https://spring.io/projects/spring-ai) with OpenAI to:
